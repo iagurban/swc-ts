@@ -1,6 +1,6 @@
 {
   "name": "@grbn/swc-ts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "license": "MIT",
   "files": [
     "dist"
@@ -9,7 +9,7 @@
     "swc-ts-build": "./dist/src/swc-ts-build-runner.js"
   },
   "scripts": {
-    "build": "yarn tsx ./src/swc-ts-build.ts -s src -d dist/src -p tsconfig.build.json && cp -R ./dist/_declarations/* ./dist/ && rm -rf ./dist/_declaration",
+    "build": "yarn tsx ./src/swc-ts-build.ts -s src -d dist/src -p tsconfig.build.json && cp -R ./dist/_declarations/* ./dist/ && rm -rf ./dist/_declarations",
     "test": "yarn jest",
     "lint": "yarn eslint \"src/**/*.{ts,tsx}\" --fix",
     "coverage": "yarn test --coverage"
@@ -18,7 +18,8 @@
     "@grbn/kit": "0.0.0-alpha.6",
     "@swc/core": "1.15.0",
     "chokidar": "4.0.3",
-    "glob": "11.0.3",
+    "glob": "11.1.0",
+    "micromatch": "^4.0.7",
     "yargs": "18.0.0"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "@swc/helpers": "^0.5.17",
     "@tsd/typescript": "^5.9.3",
     "@types/jest": "^30.0.0",
+    "@types/micromatch": "^4.0.7",
     "@types/node": "^24.7.2",
     "@types/yargs": "^17.0.34",
     "@typescript-eslint/eslint-plugin": "^8.46.1",

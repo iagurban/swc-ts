@@ -4,6 +4,7 @@ import { spawn } from 'child_process';
 import chokidar from 'chokidar';
 import { mkdir, readFile, writeFile } from 'fs/promises';
 import { glob } from 'glob';
+import micromatch from 'micromatch';
 import path from 'path';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
@@ -169,9 +170,16 @@ async function compileFile(
 /**
  * Runs a one-time build of all .ts files in the srcDir.
  */
-async function runBuild(srcDir: string, outDir: string, verbose: boolean): Promise<void> {
+async function runBuild(
+  srcDir: string,
+  outDir: string,
+  verbose: boolean,
+  excludePatterns: string[]
+): Promise<void> {
   console.log(`[SWC] Running build for ${srcDir}...`);
-  const files = await glob(`${srcDir}/**/*.ts`);
+  const files = await glob(`${srcDir}/**/*.ts`, {
+    ignore: excludePatterns,
+  });
   await Promise.all(files.map(file => compileFile(file, srcDir, outDir, verbose)));
   console.log(`[SWC] Build complete. Processed ${files.length} files.`);
 }
@@ -179,14 +187,22 @@ async function runBuild(srcDir: string, outDir: string, verbose: boolean): Promi
 /**
  * Runs a one-time build and then watches for changes.
  */
-async function runWatch(srcDir: string, outDir: string, verbose: boolean): Promise<void> {
+async function runWatch(
+  srcDir: string,
+  outDir: string,
+  verbose: boolean,
+  excludePatterns: string[]
+): Promise<void> {
   // 1. Run a full build on startup
-  await runBuild(srcDir, outDir, verbose);
+  await runBuild(srcDir, outDir, verbose, excludePatterns);
 
   // 2. Initialize the chokidar watcher
   const watcher = chokidar
     .watch(`.`, {
       ignored: (filePath, stats) => {
+        if (micromatch.isMatch(filePath, excludePatterns)) {
+          return true;
+        }
         // If it's a file, ignore it if it's dot-file, or .d.ts-file, or any not a .ts-file
         if (stats?.isFile()) {
           return (
@@ -303,6 +319,21 @@ async function main() {
   const outDir = path.resolve(argv.d);
   const tsConfigPath = argv.p && path.resolve(argv.p);
 
+  let excludePatterns: string[] = [];
+  if (tsConfigPath) {
+    try {
+      const tsconfigRaw = await readFile(tsConfigPath, 'utf-8');
+      const tsconfig = JSON.parse(tsconfigRaw);
+      if (tsconfig.exclude && Array.isArray(tsconfig.exclude)) {
+        excludePatterns = tsconfig.exclude;
+      }
+    } catch (error) {
+      console.warn(
+        `[SWC] Warning: Could not read or parse tsconfig.json at ${tsConfigPath}. Ignoring exclude paths.`
+      );
+    }
+  }
+
   if (argv.w) {
     // Watch mode
     if (tsConfigPath) {
@@ -312,13 +343,13 @@ async function main() {
       );
     }
 
-    await runWatch(srcDir, outDir, argv.v);
+    await runWatch(srcDir, outDir, argv.v, excludePatterns);
   } else {
     // Build mode
     await Promise.all(
       [
         tsConfigPath && startTsc(tsConfigPath, outDir, false, argv.v),
-        runBuild(srcDir, outDir, argv.v),
+        runBuild(srcDir, outDir, argv.v, excludePatterns),
       ].filter(isTruthy)
     );
   }
