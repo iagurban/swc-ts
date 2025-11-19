@@ -3,6 +3,7 @@
     "target": "ES2024",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "CommonJS",
+    "moduleResolution": "nodenext",
     "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,

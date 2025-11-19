@@ -15,7 +15,7 @@
     "coverage": "yarn test --coverage"
   },
   "dependencies": {
-    "@grbn/kit": "0.0.0-alpha.6",
+    "@grbn/kit": "0.0.2",
     "@swc/core": "1.15.0",
     "chokidar": "4.0.3",
     "glob": "11.1.0",

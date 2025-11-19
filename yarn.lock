@@ -749,9 +749,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grbn/kit@npm:0.0.0-alpha.6":
-  version: 0.0.0-alpha.6
-  resolution: "@grbn/kit@npm:0.0.0-alpha.6"
+"@grbn/kit@npm:0.0.2":
+  version: 0.0.2
+  resolution: "@grbn/kit@npm:0.0.2"
   dependencies:
     "@loancrate/prisma-schema-parser": "npm:^3.0.0"
     "@mrleebo/prisma-ast": "npm:^0.12.1"
@@ -762,6 +762,7 @@ __metadata:
     "@dnd-kit/utilities": "*"
     "@mantine/core": "*"
     "@nestjs/common": "*"
+    "@nestjs/config": "*"
     "@nestjs/graphql": "*"
     "@nestjs/jwt": "*"
     "@nestjs/passport": "*"
@@ -787,11 +788,11 @@ __metadata:
   bin:
     build-info-gen: dist/src/bin/build-info-gen.js
     clean-md: dist/src/bin/clean-md.js
+    dotenv-flat: dist/src/bin/dotenv-flat.js
     fetch-unicode-letters-ranges: dist/src/bin/fetch-unicode-letters-ranges.js
     fix-graphql-codegen: dist/src/bin/fix-graphql-codegen.js
-    swc-ts-build: dist/src/bin/swc-ts-build-runner.js
     watch-n-run: dist/src/bin/watch-n-run.js
-  checksum: 10c0/a33000e773702aef32bc0c93082856a1ee99afd356c8a3be9d41d76987b6b0fe0328e4c687f6b18d592a5353e16a86c1d3aba0b3561c2e6b7225c8f379fce2c6
+  checksum: 10c0/dc1996f7aeb2a7abf4414dc704c76d89ad16dbc62c105f68d08d03cceade6872b8dbc6f6ffff1287e3a000f7f1fb5d3e5d8f54c2a3f85127bf195a1a70609311
   languageName: node
   linkType: hard
 
@@ -800,7 +801,7 @@ __metadata:
   resolution: "@grbn/swc-ts@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.38.0"
-    "@grbn/kit": "npm:0.0.0-alpha.6"
+    "@grbn/kit": "npm:0.0.2"
     "@swc/cli": "npm:^0.7.8"
     "@swc/core": "npm:1.15.0"
     "@swc/helpers": "npm:^0.5.17"
