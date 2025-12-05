@@ -1,6 +1,6 @@
 {
   "name": "@grbn/swc-ts",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "files": [
     "dist"
@@ -15,10 +15,11 @@
     "coverage": "yarn test --coverage"
   },
   "dependencies": {
-    "@grbn/kit": "0.0.2",
+    "@grbn/kit": "0.0.5",
     "@swc/core": "1.15.0",
     "chokidar": "4.0.3",
     "glob": "11.1.0",
+    "lodash": "^4.17.21",
     "micromatch": "^4.0.7",
     "yargs": "18.0.0"
   },
@@ -28,6 +29,7 @@
     "@swc/helpers": "^0.5.17",
     "@tsd/typescript": "^5.9.3",
     "@types/jest": "^30.0.0",
+    "@types/lodash": "^4",
     "@types/micromatch": "^4.0.7",
     "@types/node": "^24.7.2",
     "@types/yargs": "^17.0.34",

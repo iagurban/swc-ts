@@ -749,9 +749,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grbn/kit@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@grbn/kit@npm:0.0.2"
+"@grbn/kit@npm:0.0.5":
+  version: 0.0.5
+  resolution: "@grbn/kit@npm:0.0.5"
   dependencies:
     "@loancrate/prisma-schema-parser": "npm:^3.0.0"
     "@mrleebo/prisma-ast": "npm:^0.12.1"
@@ -792,7 +792,7 @@ __metadata:
     fetch-unicode-letters-ranges: dist/src/bin/fetch-unicode-letters-ranges.js
     fix-graphql-codegen: dist/src/bin/fix-graphql-codegen.js
     watch-n-run: dist/src/bin/watch-n-run.js
-  checksum: 10c0/dc1996f7aeb2a7abf4414dc704c76d89ad16dbc62c105f68d08d03cceade6872b8dbc6f6ffff1287e3a000f7f1fb5d3e5d8f54c2a3f85127bf195a1a70609311
+  checksum: 10c0/2566d22c94c7cc61797ad8d509bd2c33168945087685c97a2a98895ae256fc68b781c63da6332705866285ff48e1f5adbe815efffb82319ee4345e8724a6cb2e
   languageName: node
   linkType: hard
 
@@ -801,12 +801,13 @@ __metadata:
   resolution: "@grbn/swc-ts@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.38.0"
-    "@grbn/kit": "npm:0.0.2"
+    "@grbn/kit": "npm:0.0.5"
     "@swc/cli": "npm:^0.7.8"
     "@swc/core": "npm:1.15.0"
     "@swc/helpers": "npm:^0.5.17"
     "@tsd/typescript": "npm:^5.9.3"
     "@types/jest": "npm:^30.0.0"
+    "@types/lodash": "npm:^4"
     "@types/micromatch": "npm:^4.0.7"
     "@types/node": "npm:^24.7.2"
     "@types/yargs": "npm:^17.0.34"
@@ -831,6 +832,7 @@ __metadata:
     jest-html-reporters: "npm:^3.1.7"
     jest-runner-tsd: "npm:^6.0.0"
     jest-util: "npm:^30.2.0"
+    lodash: "npm:^4.17.21"
     micromatch: "npm:^4.0.7"
     prettier: "npm:^3.6.2"
     ts-jest: "npm:^29.4.5"
@@ -1975,6 +1977,13 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/ff8f54fc49621210291f815fe5b15d809fd7d032941b3180743440bd507ecdf08b9e844625fa346af568c84bf34114eb378dcdc3e921a08ba1e2a08d7e3c809c
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:^4":
+  version: 4.17.21
+  resolution: "@types/lodash@npm:4.17.21"
+  checksum: 10c0/73cb006e047d8871e9d63f3a165543bf16c44a5b6fe3f9f6299e37cb8d67a7b1d55ac730959a81f9def510fd07232ff7e30e05413e5d5a12793baad84ebe36c3
   languageName: node
   linkType: hard
 
@@ -6624,7 +6633,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21":
+"lodash@npm:4.17.21, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c

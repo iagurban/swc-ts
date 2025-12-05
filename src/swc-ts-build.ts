@@ -84,7 +84,7 @@ function resolveAndFixImport(importPath: string, fileBeingCompiled: string): str
 
     const resolvedBasename = path.basename(resolvedPath);
 
-    if (resolvedBasename === 'index.js') {
+    if (resolvedBasename === 'index.js' || resolvedBasename === 'index.ts') {
       return `${importPath}/index.js`;
     }
 
