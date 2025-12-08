@@ -35,7 +35,7 @@ const swcOptions: Options = {
 
 const resolve = (importPath: string, fileBeingCompiled: string) => {
   let error: unknown;
-  for (const p of [importPath, `${importPath}.ts`, `${importPath}.js`]) {
+  for (const p of [importPath, `${importPath}.ts`, `${importPath}.tsx`, `${importPath}.js`]) {
     try {
       return require.resolve(p, {
         paths: [path.dirname(fileBeingCompiled)],
@@ -88,7 +88,7 @@ function resolveAndFixImport(importPath: string, fileBeingCompiled: string): str
       return `${importPath}/index.js`;
     }
 
-    if (path.extname(importPath) === `.ts`) {
+    if ([`.ts`, `.tsx`].includes(path.extname(importPath))) {
       return `${importPath.slice(0, -3)}.js`;
     }
 
@@ -114,7 +114,7 @@ async function compileFile(
   try {
     // Calculate the final output path
     const relativePath = path.relative(srcDir, absoluteFilePath);
-    const outPath = path.join(outDir, relativePath).replace(/\.ts$/, '.js');
+    const outPath = path.join(outDir, relativePath).replace(/\.tsx?$/, '.js');
     const mapPath = `${outPath}.map`;
 
     const { code, map } = await transformFile(path.join(srcDir, relativePath), swcOptions);
@@ -177,7 +177,7 @@ async function runBuild(
   excludePatterns: string[]
 ): Promise<void> {
   console.log(`[SWC] Running build for ${srcDir}...`);
-  const files = await glob(`${srcDir}/**/*.ts`, {
+  const files = await glob(`${srcDir}/**/*.{ts,tsx}`, {
     ignore: excludePatterns,
   });
   await Promise.all(files.map(file => compileFile(file, srcDir, outDir, verbose)));
@@ -206,7 +206,9 @@ async function runWatch(
         // If it's a file, ignore it if it's dot-file, or .d.ts-file, or any not a .ts-file
         if (stats?.isFile()) {
           return (
-            path.basename(filePath).startsWith('.') || filePath.endsWith('.d.ts') || !filePath.endsWith('.ts')
+            path.basename(filePath).startsWith('.') ||
+            filePath.endsWith('.d.ts') ||
+            !(filePath.endsWith('.ts') || filePath.endsWith('.tsx'))
           );
         }
         // Otherwise, don't ignore it (this keeps all directories for traversal)
