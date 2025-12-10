@@ -336,8 +336,6 @@ async function main() {
     })
     .help().argv;
 
-  console.log(argv);
-
   // Resolve to absolute paths
   const srcDir = path.resolve(argv.s);
   const outDir = path.resolve(argv.d);
