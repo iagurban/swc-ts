@@ -1,6 +1,6 @@
 {
   "name": "@grbn/swc-ts",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "files": [
     "dist"
@@ -15,7 +15,7 @@
     "coverage": "yarn test --coverage"
   },
   "dependencies": {
-    "@grbn/kit": "0.0.5",
+    "@grbn/kit": "0.0.13",
     "@swc/core": "1.15.0",
     "chokidar": "4.0.3",
     "glob": "11.1.0",
