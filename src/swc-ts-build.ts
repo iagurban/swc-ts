@@ -12,7 +12,7 @@ import { hideBin } from 'yargs/helpers';
 /**
  * Define the SWC configuration for consistency.
  */
-const swcOptions: Options = {
+const defaultSwcOptopns: Options = {
   jsc: {
     parser: {
       syntax: 'typescript',
@@ -109,7 +109,8 @@ async function compileFile(
   absoluteFilePath: string,
   srcDir: string,
   outDir: string,
-  verbose: boolean
+  verbose: boolean,
+  swcOptions: Record<string, unknown>
 ): Promise<void> {
   try {
     // Calculate the final output path
@@ -174,13 +175,14 @@ async function runBuild(
   srcDir: string,
   outDir: string,
   verbose: boolean,
-  excludePatterns: string[]
+  excludePatterns: string[],
+  swcOptions: Record<string, unknown>
 ): Promise<void> {
   console.log(`[SWC] Running build for ${srcDir}...`);
   const files = await glob(`${srcDir}/**/*.{ts,tsx}`, {
     ignore: excludePatterns,
   });
-  await Promise.all(files.map(file => compileFile(file, srcDir, outDir, verbose)));
+  await Promise.all(files.map(file => compileFile(file, srcDir, outDir, verbose, swcOptions)));
   console.log(`[SWC] Build complete. Processed ${files.length} files.`);
 }
 
@@ -191,10 +193,11 @@ async function runWatch(
   srcDir: string,
   outDir: string,
   verbose: boolean,
-  excludePatterns: string[]
+  excludePatterns: string[],
+  swcOptions: Record<string, unknown>
 ): Promise<void> {
   // 1. Run a full build on startup
-  await runBuild(srcDir, outDir, verbose, excludePatterns);
+  await runBuild(srcDir, outDir, verbose, excludePatterns, swcOptions);
 
   // 2. Initialize the chokidar watcher
   const watcher = chokidar
@@ -217,8 +220,8 @@ async function runWatch(
       persistent: true,
       cwd: srcDir,
     })
-    .on('add', filePath => compileFile(path.join(srcDir, filePath), srcDir, outDir, verbose))
-    .on('change', filePath => compileFile(path.join(srcDir, filePath), srcDir, outDir, verbose))
+    .on('add', filePath => compileFile(path.join(srcDir, filePath), srcDir, outDir, verbose, swcOptions))
+    .on('change', filePath => compileFile(path.join(srcDir, filePath), srcDir, outDir, verbose, swcOptions))
     .on('ready', () => {
       // This will fire once the initial scan is complete
       if (verbose) {
@@ -238,7 +241,13 @@ async function runWatch(
 /**
  * Starts the TSC --watch process for declaration files (.d.ts).
  */
-function startTsc(tsConfigPath: string, outDir: string, watch: boolean, verbose: boolean) {
+function startTsc(
+  tsConfigPath: string,
+  outDir: string,
+  watch: boolean,
+  verbose: boolean,
+  declarationsDir: string
+) {
   return new Promise<number>((resolve, reject) => {
     console.log(`[TSC] Starting declaration file watcher for ${tsConfigPath}...`);
 
@@ -249,7 +258,7 @@ function startTsc(tsConfigPath: string, outDir: string, watch: boolean, verbose:
         '-p',
         tsConfigPath,
         '--declarationDir',
-        path.join(outDir, `../_declarations`),
+        path.join(outDir, declarationsDir),
         watch && '--watch',
         '--emitDeclarationOnly',
         watch && '--preserveWatchOutput',
@@ -302,6 +311,17 @@ async function main() {
       type: 'string',
       description: 'Path to the tsconfig.json file',
     })
+    .option('c', {
+      alias: 'config',
+      type: 'string',
+      description: 'Path to the .swcrc file',
+    })
+    .option('dd', {
+      alias: 'declarations-dir',
+      type: 'string',
+      description: `Path to the declarations output folder (relative to "out" directory)`,
+      default: `./`,
+    })
     .option('w', {
       alias: 'watch',
       type: 'boolean',
@@ -320,6 +340,7 @@ async function main() {
   const srcDir = path.resolve(argv.s);
   const outDir = path.resolve(argv.d);
   const tsConfigPath = argv.p && path.resolve(argv.p);
+  const swcOptions = argv.c ? JSON.parse((await readFile(argv.c)).toString()) : defaultSwcOptopns;
 
   let excludePatterns: string[] = [];
   if (tsConfigPath) {
@@ -341,17 +362,17 @@ async function main() {
     if (tsConfigPath) {
       void retrying(
         () => 1000, // on some critical error that kills the process
-        () => startTsc(tsConfigPath, outDir, true, argv.v)
+        () => startTsc(tsConfigPath, outDir, true, argv.v, argv.dd)
       );
     }
 
-    await runWatch(srcDir, outDir, argv.v, excludePatterns);
+    await runWatch(srcDir, outDir, argv.v, excludePatterns, swcOptions);
   } else {
     // Build mode
     await Promise.all(
       [
-        tsConfigPath && startTsc(tsConfigPath, outDir, false, argv.v),
-        runBuild(srcDir, outDir, argv.v, excludePatterns),
+        tsConfigPath && startTsc(tsConfigPath, outDir, false, argv.v, argv.dd),
+        runBuild(srcDir, outDir, argv.v, excludePatterns, swcOptions),
       ].filter(isTruthy)
     );
   }

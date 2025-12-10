@@ -749,12 +749,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@grbn/kit@npm:0.0.5":
-  version: 0.0.5
-  resolution: "@grbn/kit@npm:0.0.5"
+"@grbn/kit@npm:0.0.13":
+  version: 0.0.13
+  resolution: "@grbn/kit@npm:0.0.13"
   dependencies:
     "@loancrate/prisma-schema-parser": "npm:^3.0.0"
     "@mrleebo/prisma-ast": "npm:^0.12.1"
+    lodash-es: "npm:^4.17.21"
   peerDependencies:
     "@apollo/client": "*"
     "@dnd-kit/core": "*"
@@ -770,12 +771,12 @@ __metadata:
     bcrypt: "*"
     chokidar: "*"
     clsx: "*"
+    dataloader: "*"
     express: "*"
     glob: "*"
     graphql: "*"
     ioredis: "*"
     jwks-rsa: "*"
-    lodash: "*"
     mobx-keystone: "*"
     mobx-utils: "*"
     ntp-time: "*"
@@ -792,7 +793,7 @@ __metadata:
     fetch-unicode-letters-ranges: dist/src/bin/fetch-unicode-letters-ranges.js
     fix-graphql-codegen: dist/src/bin/fix-graphql-codegen.js
     watch-n-run: dist/src/bin/watch-n-run.js
-  checksum: 10c0/2566d22c94c7cc61797ad8d509bd2c33168945087685c97a2a98895ae256fc68b781c63da6332705866285ff48e1f5adbe815efffb82319ee4345e8724a6cb2e
+  checksum: 10c0/98cfee6c3bd56852ec9007f38c4ddd7a07201f0fe6c85057beb3f471a5d42b7f077e0d3655ba9373a49ee318131c094a2630a93fafe85c06cd936db48efd3ecd
   languageName: node
   linkType: hard
 
@@ -801,7 +802,7 @@ __metadata:
   resolution: "@grbn/swc-ts@workspace:."
   dependencies:
     "@eslint/js": "npm:^9.38.0"
-    "@grbn/kit": "npm:0.0.5"
+    "@grbn/kit": "npm:0.0.13"
     "@swc/cli": "npm:^0.7.8"
     "@swc/core": "npm:1.15.0"
     "@swc/helpers": "npm:^0.5.17"
@@ -6633,6 +6634,13 @@ __metadata:
   dependencies:
     p-locate: "npm:^5.0.0"
   checksum: 10c0/d3972ab70dfe58ce620e64265f90162d247e87159b6126b01314dd67be43d50e96a50b517bce2d9452a79409c7614054c277b5232377de50416564a77ac7aad3
+  languageName: node
+  linkType: hard
+
+"lodash-es@npm:^4.17.21":
+  version: 4.17.21
+  resolution: "lodash-es@npm:4.17.21"
+  checksum: 10c0/fb407355f7e6cd523a9383e76e6b455321f0f153a6c9625e21a8827d10c54c2a2341bd2ae8d034358b60e07325e1330c14c224ff582d04612a46a4f0479ff2f2
   languageName: node
   linkType: hard
 
