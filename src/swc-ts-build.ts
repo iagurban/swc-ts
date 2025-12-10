@@ -6,6 +6,7 @@ import { mkdir, readFile, writeFile } from 'fs/promises';
 import { glob } from 'glob';
 import micromatch from 'micromatch';
 import path from 'path';
+import * as ts from 'typescript';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
@@ -46,6 +47,80 @@ const resolve = (importPath: string, fileBeingCompiled: string) => {
   }
   throw error;
 };
+
+/**
+ * Parses code, finds import/require paths, transforms them via a callback,
+ * and replaces them in the original string bottom-up.
+ */
+export function transformImportPaths(sourceCode: string, transformFn: (path: string) => string): string {
+  // 1. Create AST
+  const sourceFile = ts.createSourceFile(
+    'file.ts', // Dummy filename
+    sourceCode,
+    ts.ScriptTarget.Latest,
+    true
+  );
+
+  // 2. Collect Replacements
+  const replacements: { start: number; end: number; newText: string }[] = [];
+
+  function visit(node: ts.Node) {
+    // Handle 'import ... from "path"' and 'export ... from "path"'
+    if (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) {
+      if (node.moduleSpecifier && ts.isStringLiteral(node.moduleSpecifier)) {
+        queueReplacement(node.moduleSpecifier);
+      }
+    }
+
+    // Handle 'require("path")' and dynamic 'import("path")'
+    if (ts.isCallExpression(node)) {
+      const isRequire = ts.isIdentifier(node.expression) && node.expression.text === 'require';
+      const isDynamicImport = node.expression.kind === ts.SyntaxKind.ImportKeyword;
+
+      if ((isRequire || isDynamicImport) && node.arguments.length > 0) {
+        const arg = node.arguments[0];
+        if (ts.isStringLiteral(arg)) {
+          queueReplacement(arg);
+        }
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  }
+
+  function queueReplacement(node: ts.StringLiteral) {
+    const oldPath = node.text;
+    const newPath = transformFn(oldPath);
+
+    if (oldPath !== newPath) {
+      const start = node.getStart(sourceFile);
+      const end = node.getEnd();
+
+      // Preserve original quote style if possible
+      const quoteChar = sourceCode[start];
+      const validQuote = quoteChar === "'" || quoteChar === '"' || quoteChar === '`' ? quoteChar : '"';
+
+      replacements.push({
+        start,
+        end,
+        newText: `${validQuote}${newPath}${validQuote}`,
+      });
+    }
+  }
+
+  // 3. Execute Visitor
+  visit(sourceFile);
+
+  // 4. Apply Replacements Bottom-Up
+  const sortedReplacements = replacements.sort((a, b) => b.start - a.start);
+  let result = sourceCode;
+
+  for (const { start, end, newText } of sortedReplacements) {
+    result = result.substring(0, start) + newText + result.substring(end);
+  }
+
+  return result;
+}
 
 /**
  * Resolves an import path to its on-disk location and determines the
@@ -121,18 +196,8 @@ async function compileFile(
     const { code, map } = await transformFile(path.join(srcDir, relativePath), swcOptions);
 
     // 1. Compile the changed file in memory
-    let fixedCode = [
-      // should return the same groups
-      /(import[\s\S]*?from\s+)(['"])(.*?)(['"]\s*;)/g,
-      /(require\s*\(\s*)(['"])(.*?)(['"]\s*\))/g,
-    ].reduce(
-      (result, regex) =>
-        result.replace(
-          regex,
-          (match, prefix, open, importPath, close) =>
-            `${prefix}${open}${resolveAndFixImport(importPath, absoluteFilePath)}${close}`
-        ),
-      code
+    let fixedCode = transformImportPaths(code, importPath =>
+      resolveAndFixImport(importPath, absoluteFilePath)
     );
 
     if (map) {
