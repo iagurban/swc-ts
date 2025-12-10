@@ -9,7 +9,7 @@
     "swc-ts-build": "./dist/src/swc-ts-build-runner.js"
   },
   "scripts": {
-    "build": "yarn tsx ./src/swc-ts-build.ts -s src -d dist/src -p tsconfig.build.json && cp -R ./dist/_declarations/* ./dist/ && rm -rf ./dist/_declarations",
+    "build": "yarn tsx ./src/swc-ts-build.ts -s src -d dist/src -p tsconfig.build.json -t ../",
     "test": "yarn jest",
     "lint": "yarn eslint \"src/**/*.{ts,tsx}\" --fix",
     "coverage": "yarn test --coverage"

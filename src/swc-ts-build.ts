@@ -316,8 +316,8 @@ async function main() {
       type: 'string',
       description: 'Path to the .swcrc file',
     })
-    .option('dd', {
-      alias: 'declarations-dir',
+    .option('t', {
+      alias: 'types-dir',
       type: 'string',
       description: `Path to the declarations output folder (relative to "out" directory)`,
       default: `./`,
@@ -335,6 +335,8 @@ async function main() {
       default: false,
     })
     .help().argv;
+
+  console.log(argv);
 
   // Resolve to absolute paths
   const srcDir = path.resolve(argv.s);
@@ -362,7 +364,7 @@ async function main() {
     if (tsConfigPath) {
       void retrying(
         () => 1000, // on some critical error that kills the process
-        () => startTsc(tsConfigPath, outDir, true, argv.v, argv.dd)
+        () => startTsc(tsConfigPath, outDir, true, argv.v, argv.t)
       );
     }
 
@@ -371,7 +373,7 @@ async function main() {
     // Build mode
     await Promise.all(
       [
-        tsConfigPath && startTsc(tsConfigPath, outDir, false, argv.v, argv.dd),
+        tsConfigPath && startTsc(tsConfigPath, outDir, false, argv.v, argv.t),
         runBuild(srcDir, outDir, argv.v, excludePatterns, swcOptions),
       ].filter(isTruthy)
     );
